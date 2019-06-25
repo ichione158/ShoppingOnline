@@ -1,0 +1,55 @@
+﻿@model IEnumerable<ShoppingOnline.Models.Category>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/AdministratorCP/Views/Shared/Layout_Admin.cshtml";
+}
+@using PagedList
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.valid)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.name)
+            </td>
+            <td>
+                @{
+                    if (item.valid)
+                    {
+                        @Html.Raw("Còn kinh doanh")
+                    }
+                    else
+                    {
+                        @Html.Raw("Ngừng kinh doanh")
+                    }
+                }
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.id }) |
+                @Html.ActionLink("Details", "Details", new { id = item.id }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.id })
+            </td>
+        </tr>
+    }
+
+</table>
+
+@Html.ActionLink("Trang trước", "Index", new { Page_No = ((IPagedList)Model).PageNumber - 1 }) |
+Trang @(((IPagedList)Model).PageCount < ((IPagedList)Model).PageNumber ? 0 : ((IPagedList)Model).PageNumber) trong tổng số @(((IPagedList)Model).PageCount) (trang) |
+@Html.ActionLink("Trang sau", "Index", new { Page_No = ((IPagedList)Model).PageNumber + 1 })

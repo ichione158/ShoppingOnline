@@ -1,0 +1,54 @@
+﻿@model IEnumerable<ShoppingOnline.Models.CartItem>
+
+@{
+    ViewBag.Title = "Order";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Order</h2>
+
+<p>
+    @Html.ActionLink("Tiếp tục mua hàng", "Index", "Home") |
+    @Html.ActionLink("Xóa giỏ hàng", "XoaGioHang")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.product.name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.quantity)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.product.price)
+        </th>
+        <th>
+            Thành tiền
+        </th>
+        <th>Thao tác</th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.product.name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.quantity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.product.price)
+            </td>
+            <td>
+                @(item.product.price * item.quantity)
+            </td>
+            <td>
+                @Html.ActionLink("+", "Add", new { id = item.product.id, quantity = 1 }, null) |
+                @Html.ActionLink("-", "Add", new { id = item.product.id, quantity = -1 }, null) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.product.id })
+            </td>
+        </tr>
+    }
+</table>
+<h5 style="font-weight:bold">Tổng tiền: @ViewBag.TongTien</h5>

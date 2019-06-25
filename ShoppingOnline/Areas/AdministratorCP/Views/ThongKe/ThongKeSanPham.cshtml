@@ -1,0 +1,116 @@
+﻿@model IEnumerable<ShoppingOnline.Models.SPThongKe>
+
+@{
+    Layout = "~/Areas/AdministratorCP/Views/Shared/Layout_Admin.cshtml";
+}
+
+<h2>Thống Kê Sản Phẩm</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.quantity)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.price)
+        </th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.quantity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.price)
+            </td>
+        </tr>
+    }
+
+</table>
+
+<table class="colums">
+    <tr>
+        <td><div id="hienthibieudoPIE" style="border: 1px solid #ccc"></div></td>
+        <td><div id="hienthibieudoLINE" style="border: 1px solid #ccc"></div></td>
+    </tr>
+</table>
+
+@section scripts{
+    <!-- Thư viện google chart dùng để vẽ biểu đồ-->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <!-- Khi trang load xong resourecs-->
+    <script>
+        $(document).ready(function(){
+        //Load google charts: khởi tảo google chart
+        google.charts.load('current',{'packages': ['corechart']});
+        google.charts.setOnLoadCallback(drawThongKeSanPham);
+        });
+
+        function drawThongKeSanPham(){
+            // Hiển thị biểu đồ
+            // Phần nạp dữ liệu để hiển thị
+            var tensanphams = [];
+            var soluongSanphams = [];
+            var giaSanPhams = [];
+
+            //Chuyển dữ liệu Model sang dạng Json Array
+            var result = @Html.Raw(Json.Encode(Model));
+
+            $.each(result, function(i,item){
+                tensanphams.push([item.name].toString());
+                soluongSanphams.push([item.quantity]);
+                giaSanPhams.push([item.price]);
+            });
+
+            //Vẽ biểu đồ dạng PIE - Thống kê số lượng
+
+            //Khởi tạo và nạp dữ liệu cho biểu đồ
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Sản Phẩm');
+            data.addColumn('number', "Số lượng");
+            data.addRows(tensanphams.length);
+
+            for (var i = 0; i < tensanphams.length; i++) {
+                data.setCell(i, 0, tensanphams[i]);
+                data.setCell(i, 1, parseInt(soluongSanphams[i]));
+            }
+
+            // Cấu hình cơ bản cho biểu đồ
+            var options = {
+                title: 'Thống kê thông tin sản phẩm',
+                is3D: true,
+                width: 550,
+                height: 400
+            };
+
+            // Vẽ biểu đồ thống kê theo số lượng
+            var chart = new google.visualization.PieChart(document.getElementById('hienthibieudoPIE'));
+            chart.draw(data, options);
+
+            //Vẽ biểu đồ dang Column - thống kê theo đơn giá
+
+            // Khởi tạo và nạp dữ liệu cho biểu đồ
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Sản Phẩm');
+            data.addColumn('number', "Số lượng");
+            data.addRows(tensanphams.length);
+
+            for (var i = 0; i < tensanphams.length; i++) {
+                data.setCell(i, 0, tensanphams[i]);
+                data.setCell(i, 1, parseInt(soluongSanphams[i]));
+            }
+            // vẽ biểu đồ theo đơn giá
+            var chart = new google.visualization.LineChart(document.getElementById('hienthibieudoLINE'));
+            chart.draw(data, options);
+
+        }
+    </script>
+}

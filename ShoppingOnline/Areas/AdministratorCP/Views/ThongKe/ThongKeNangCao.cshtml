@@ -1,0 +1,160 @@
+﻿@model IEnumerable<ShoppingOnline.Models.SPThongKe>
+
+@{
+    ViewBag.Title = "ThongKeNangCao";
+    Layout = "~/Areas/AdministratorCP/Views/Shared/Layout_Admin.cshtml";
+}
+
+<h2>Thống Kê Sản Phẩm</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.quantity)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.price)
+        </th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.quantity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.price)
+            </td>
+        </tr>
+    }
+</table>
+
+<button id="btnthongkesanpham" class="btn-danger">THỐNG KÊ THEO SẢN PHẨM</button>
+<button id="btnthongkedanhmuc" class="btn-danger">THỐNG KÊ THEO DANH MỤC</button>
+<hr />
+<table class="columns">
+    <tr>
+        <td><div id="hienthibieudoPIE" style="border: 1px solid #ccc"></div></td>
+        <td><div id="hienthibieudoLINE" style="border: 1px solid #ccc"></div></td>
+    </tr>
+</table>
+
+@section scripts{
+    <!--Thư viện Google Chart dủng để vẽ biểu đồ -->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+    <script>
+        //sự kiện bấm vào nút "thống kê theo sản phẩm"
+        $(document).ready(function () {
+            $("#btnthongkesanpham").click(function () {
+                google.charts.load('current', { 'packages': ['corechart'] });
+                google.charts.setOnLoadCallback(drawThongKeSanPham);
+            });
+            //load trang khởi tạo google chart
+            function drawThongKeSanPham() {
+                console.log("asdfs");
+                // gọi ajax về server để lấy dữ liệu thống kê
+                $.ajax({
+                    url: "/ThongKe/ThongKeSanPham",
+                    //data: JSON.stringify(dto),// nếu có dữ liệu gửi về server
+                    type: "GET",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    async: true,
+                    success: function (result) {
+                        //hiển thị bảng dữ liệu
+                        var tblContent =
+                            "<table class ='table'>" +
+                            "<thead>" +
+                            "<tr>" +
+                            "<th>Mã số</th>" +
+                            "<th>Tên sản phẩm</th>" +
+                            "<th>Số lượng</th>" +
+                            "<th>Đơn giá</th>" +
+                            "</tr>" +
+                            "</thead>" +
+                            "<tbody>";
+
+                        var tblData = "";
+                        $.each(result, function (i, item) {
+                            tblData = tblData + "<tr>" +
+                                "<td>" + item.id + "</td>" +
+                                "<td>" + item.name + "</td>" +
+                                "<td>" + item.quantity + "</td>" +
+                                "<td>" + item.price + "</td>" +
+                                "</tr>";
+                        });
+
+                        tblContent = tblContent + tblData + "</tbody>" + "</table>";
+                        $('#hienthitable').append(tblContent);// kết thúc phần hiển thị bảng dữ liệu
+                        //hiển thị biểu đồ
+                        //phần nạp dữ liệu để hiển thị
+                        var tenSanPhams = [];
+                        var soLuongSanPhams = [];
+                        var giaSanPhams = [];
+
+                        $.each(result, function (i, item) {
+                            tenSanPhams.push([item.name].toString());
+                            soLuongSanPhams.push([item.quantity]);
+                            giaSanPhams.push([item.price]);
+
+                        });
+
+                        //vẽ biểu đồ dang pie - thống kê số lượng
+
+                        //khởi tạo và nạp dữ liệu cho biểu đồ
+                        var data = new google.visualization.DataTable();
+                        data.addColumn('string', 'Sản phẩm');
+                        data.addColumn('number', 'Số lượng');
+                        data.addRows(tenSanPhams.length);
+
+                        for (var i = 0; i < tenSanPhams.length; i++) {
+                            data.setCell(i, 0, tenSanPhams[i]);
+                            data.setCell(i, 1, parseInt(soLuongSanPhams[i]));
+                        }
+
+                        //cấu hình cơ bản cho biểu đồ
+                        var options = {
+                            title: 'Thống kê thông tin sản phẩm',
+                            is3D: true,
+                            width: 550,
+                            height: 400
+                        };
+
+                        //vẽ biểu đồ thống kê theo số lượng
+                        var chart = new google.visualization.PieChart(document.getElementById('hienthibieudoPIE'));
+                        chart.draw(data, options);
+
+                        //vẽ biểu đồ dạng column - thống kê theo đơn giá
+                        //khởi tạo và nạp dữ liệu
+                        var data = new google.visualization.DataTable();
+                        data.addColumn('string', 'Sản phẩm');
+                        data.addColumn('number', 'Đơn giá');
+                        data.addRows(tenSanPhams.length);
+
+                        for (var i = 0; i < tenSanPhams.length; i++) {
+                            data.setCell(i, 0, tenSanPhams[i]);
+                            data.setCell(i, 1, parseInt(giaSanPhams[i]));
+                        }
+
+                        //vẽ biểu đồ thống kê theo đơn giá
+                        var chart = new google.visualization.LineChart(document.getElementById('hienthibieudoLINE'));
+                        chart.draw(data, options);
+                    },
+                    error: function (errormessage) {
+                        alert(errormessage.responseText);
+                    }
+                });
+            }
+
+        });
+
+    </script>
+}

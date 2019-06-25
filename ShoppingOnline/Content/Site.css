@@ -1,0 +1,49 @@
+﻿body {
+    padding-top: 50px;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: azure;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    width: auto;
+}
+
+.banner-content{
+    width: auto;
+}
+
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input, select, extarea {
+    max-width: 280px;
+}
+
+#footer {
+    background: url(/Content/Image/15deb67f86b543-croissant.jpg) no-repeat center top;
+    background-size: cover;
+}
+
+.navbar-inverse {
+    background-color: dimgrey;
+    border-color: #080808;
+}
+
+.navbar > .container .navbar-brand, .navbar > .container-fluid .navbar-brand {
+    margin-left: -15px;
+    color: white;
+    font-weight: bold
+}
+
+.navbar-inverse .navbar-nav > li > a {
+    color: lightblue;
+}
+

@@ -1,0 +1,27 @@
+﻿body {
+    padding-top: 50px;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: white;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    width: auto;
+}
+
+.banner-content {
+    width: auto;
+}
+
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+.navbar-inverse .navbar-nav > li > a {
+    color: aqua;
+}

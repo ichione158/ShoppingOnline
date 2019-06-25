@@ -1,0 +1,40 @@
+﻿@model IEnumerable<ShoppingOnline.Models.Product>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using PagedList
+
+@using (Html.BeginForm())
+{
+    <p>
+        Title: @Html.TextBox("SreachString") <input type="submit" class="btn-success" value="Tìm kiếm" />
+    </p>
+}
+<hr />
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-3">
+            <div class="card" style="width: 350px; height: 350px; border: 5px solid darkgrey; background-color: white">
+                <img class="card-img-top" src="@item.thumbnail" alt="Card image cap" style="width:339px; height:200px">
+                <div class="card-body">
+                    <h3 class="card-title" style="font-weight: bold;">&nbsp;@item.name</h3>
+                    <h4 class="card-title">&nbsp;Giá : <span style="color:red;">@item.price VNĐ</span></h4>
+                    @*<p class="card-text">Giá : @item.price VNĐ</p>*@
+                    <br />
+                    <p class="text-center">
+                        @Html.ActionLink("Add to Cart", "SelectValue", "ShoppingCart", new { id = item.id, quantity = 1 }, null) |
+                        @Html.ActionLink("Details", "Details", new { id = item.id })
+                    </p>
+                </div>
+            </div>
+            <hr />
+        </div>
+    }
+</div>
+
+@Html.ActionLink("Trang trước", "Index", new { SreachString = ViewBag.ChuoiTimKiem ,Page_No = ((IPagedList)Model).PageNumber - 1 }) |
+Trang @(((IPagedList)Model).PageCount < ((IPagedList)Model).PageNumber ? 0 : ((IPagedList)Model).PageNumber) trong tổng số @(((IPagedList)Model).PageCount) (trang) |
+@Html.ActionLink("Trang sau", "Index", new { SreachString = ViewBag.ChuoiTimKiem, Page_No = ((IPagedList)Model).PageNumber + 1 })
